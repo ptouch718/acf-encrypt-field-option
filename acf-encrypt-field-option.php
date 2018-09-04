@@ -92,7 +92,6 @@ class acf_encrypt_field_option
                             return false;
                         });
                         inputWrapper.appendChild(button)
-                        console.log(button)
                     })
                 }())
             </script>
