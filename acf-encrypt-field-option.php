@@ -12,15 +12,15 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 class acf_encrypt_field_option
 {
 
-	private $key;
+    private $key;
 
-	public function __construct(
+    public function __construct(
         $key = 'keystring'
     )
-	{
-		$this->key = defined('ACF_ENCRYPT_FIELD_KEY') ? ACF_ENCRYPT_FIELD_KEY : $key;
-		$this->initialize();
-	}
+    {
+        $this->key = defined('ACF_ENCRYPT_FIELD_KEY') ? ACF_ENCRYPT_FIELD_KEY : $key;
+        $this->initialize();
+    }
 
     public function initialize()
     {
@@ -30,34 +30,34 @@ class acf_encrypt_field_option
         add_filter('acf/prepare_field', [$this, 'prepare_field'], 10, 3);
     }
 
-	public function render_field_settings($field)
-	{
-		acf_render_field_setting( $field, [
+    public function render_field_settings($field)
+    {
+        acf_render_field_setting( $field, [
             'label'         => __('Encrypt Field?'),
             'instructions'  => '',
             'name'          => '_is_encrypted',
             'type'          => 'true_false',
             'ui'            => 1,
         ], true);   
-	}
+    }
 
-	public function update_value($value, $post_id, $field)
-	{
-		if ($field['_is_encrypted'])
-    	{
-    		return $this->encrypt($value, $this->key);
-    	}
+    public function update_value($value, $post_id, $field)
+    {
+        if ($field['_is_encrypted'])
+        {
+            return $this->encrypt($value, $this->key);
+        }
         return $value;
-	}
+    }
 
-	public function load_value($value, $post_id, $field)
-	{
-		if ($field['_is_encrypted'])
-    	{
-    		return $this->decrypt($value, $this->key);
-    	}
-		return $value;
-	}
+    public function load_value($value, $post_id, $field)
+    {
+        if ($field['_is_encrypted'])
+        {
+            return $this->decrypt($value, $this->key);
+        }
+        return $value;
+    }
 
     public function prepare_field($field)
     {
@@ -101,32 +101,32 @@ class acf_encrypt_field_option
         return $field;
     }
 
-	private function encrypt($str, $key)
-	{
-		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-    	$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-    	$h_key = hash('sha256', $key, TRUE);
-    	return base64_encode(mcrypt_encrypt(
-    		MCRYPT_RIJNDAEL_256, 
-    		$h_key, 
-    		$str, 
-    		MCRYPT_MODE_ECB, 
-    		$iv
-    	));
-	} 
+    private function encrypt($str, $key)
+    {
+        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+        $h_key = hash('sha256', $key, TRUE);
+        return base64_encode(mcrypt_encrypt(
+            MCRYPT_RIJNDAEL_256, 
+            $h_key, 
+            $str, 
+            MCRYPT_MODE_ECB, 
+            $iv
+        ));
+    } 
 
-	private function decrypt($enc_str, $key)
-	{
-		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-    	$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-    	$h_key = hash('sha256', $key, TRUE);
-    	return trim(mcrypt_decrypt(
-    		MCRYPT_RIJNDAEL_256, 
-    		$h_key, 
-    		base64_decode($enc_str),
-    		 MCRYPT_MODE_ECB, 
-    		 $iv
-    	));
-	}
+    private function decrypt($enc_str, $key)
+    {
+        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+        $h_key = hash('sha256', $key, TRUE);
+        return trim(mcrypt_decrypt(
+            MCRYPT_RIJNDAEL_256, 
+            $h_key, 
+            base64_decode($enc_str),
+             MCRYPT_MODE_ECB, 
+             $iv
+        ));
+    }
 }
 new acf_encrypt_field_option();

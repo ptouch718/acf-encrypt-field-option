@@ -4,7 +4,7 @@ Adds an option to encrypt text field values upon save
 
 ## Installation
 
-Download and unzip plugin direcrtory inside of `wp-content/plugins`
+Download and unzip plugin direcrtory inside of `wp-content/plugins` and activate plugin
 
 Define the `ACF_ENCRYPT_FIELD_KEY` constant inside of `wp-config.php`
 
