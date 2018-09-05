@@ -52,7 +52,7 @@ class acf_encrypt_field_option
     {
         if ($field[$this->option_name])
         {
-            return $iv.$this->encrypt($value);
+            return $this->encrypt($value);
         }
         return $value;
     }
