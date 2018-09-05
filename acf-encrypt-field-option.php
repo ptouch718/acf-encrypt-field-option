@@ -17,13 +17,15 @@ class acf_encrypt_field_option
     private $cipher;
 
     public function __construct(
-        $secret_key = 'keystring',
-        $cipher     = 'AES-256-CBC'
+        $secret_key  = 'keystring',
+        $cipher      = 'AES-256-CBC',
+        $option_name = '_acf_efo_is_encrypted'
     )
     {
-        $this->secret_key = defined('ACF_EFO_SECRET_KEY') ? ACF_EFO_SECRET_KEY : $secret_key;
-        $this->cipher     = $cipher;
-        $this->key        = hash('sha256', $this->secret_key);
+        $this->secret_key  = defined('ACF_EFO_SECRET_KEY') ? ACF_EFO_SECRET_KEY : $secret_key;
+        $this->cipher      = $cipher;
+        $this->option_name = $option_name;
+        $this->key         = hash('sha256', $this->secret_key);
         $this->initialize();
     }
 
@@ -48,9 +50,8 @@ class acf_encrypt_field_option
 
     public function update_value($value, $post_id, $field)
     {
-        if ($field['_is_encrypted'])
+        if ($field[$this->option_name])
         {
-            
             return $iv.$this->encrypt($value);
         }
         return $value;
@@ -58,7 +59,7 @@ class acf_encrypt_field_option
 
     public function load_value($value, $post_id, $field)
     {
-        if ($field['_is_encrypted'])
+        if ($field[$this->option_name])
         {
             return $this->decrypt($value);
         }
@@ -67,7 +68,7 @@ class acf_encrypt_field_option
 
     public function prepare_field($field)
     {
-        if ($field['_is_encrypted'])
+        if ($field[$this->option_name])
         {
             $field_selector = '.acf-field-'.substr($field['key'], 6);
             ?>
