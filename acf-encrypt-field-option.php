@@ -5,7 +5,7 @@ Plugin URI: https://github.com/ptouch718/acf-encrypt-field-option
 Description: Adds an option to encrypt text field values upon save
 Version: 1.1.0
 Author: Powell May 
-Author URI: powell.may@gmail.com
+Author URI: https://github.com/ptouch718
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
@@ -42,7 +42,7 @@ class acf_encrypt_field_option
         acf_render_field_setting( $field, [
             'label'         => __('Encrypt Field?'),
             'instructions'  => '',
-            'name'          => '_is_encrypted',
+            'name'          => $this->option_name,
             'type'          => 'true_false',
             'ui'            => 1,
         ], true);   
