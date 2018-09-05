@@ -6,9 +6,9 @@ Adds an option to encrypt text field values upon save
 
 Download and unzip plugin direcrtory inside of `wp-content/plugins` and activate plugin
 
-Define the `ACF_ENCRYPT_FIELD_KEY` constant inside of `wp-config.php`
+Define the `ACF_EFO_SECRET_KEY` constant inside of `wp-config.php`
 
 ```
 /** ACF Encrypt Field Option Key */
-define('ACF_ENCRYPT_FIELD_KEY', 'your key here');
+define('ACF_EFO_SECRET_KEY', 'your key here');
 ```

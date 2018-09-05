@@ -3,7 +3,7 @@
 Plugin Name: Advanced Custom Fields Encrypt Field Option
 Plugin URI: https://github.com/ptouch718/acf-encrypt-field-option
 Description: Adds an option to encrypt text field values upon save
-Version: 1.0.0
+Version: 1.1.0
 Author: Powell May 
 Author URI: powell.may@gmail.com
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -12,13 +12,18 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 class acf_encrypt_field_option
 {
 
-    private $key;
+    private $secret_key;
+    private $secret_iv;
+    private $cipher;
 
     public function __construct(
-        $key = 'keystring'
+        $secret_key = 'keystring',
+        $cipher     = 'AES-256-CBC'
     )
     {
-        $this->key = defined('ACF_ENCRYPT_FIELD_KEY') ? ACF_ENCRYPT_FIELD_KEY : $key;
+        $this->secret_key = defined('ACF_EFO_SECRET_KEY') ? ACF_EFO_SECRET_KEY : $secret_key;
+        $this->cipher     = $cipher;
+        $this->key        = hash('sha256', $this->secret_key);
         $this->initialize();
     }
 
@@ -45,7 +50,8 @@ class acf_encrypt_field_option
     {
         if ($field['_is_encrypted'])
         {
-            return $this->encrypt($value, $this->key);
+            
+            return $iv.$this->encrypt($value);
         }
         return $value;
     }
@@ -54,7 +60,7 @@ class acf_encrypt_field_option
     {
         if ($field['_is_encrypted'])
         {
-            return $this->decrypt($value, $this->key);
+            return $this->decrypt($value);
         }
         return $value;
     }
@@ -101,32 +107,33 @@ class acf_encrypt_field_option
         return $field;
     }
 
-    private function encrypt($str, $key)
+    private function encrypt($str)
     {
-        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-        $h_key = hash('sha256', $key, TRUE);
-        return base64_encode(mcrypt_encrypt(
-            MCRYPT_RIJNDAEL_256, 
-            $h_key, 
+        $iv      = openssl_random_pseudo_bytes(16);
+        $enc_str = openssl_encrypt(
             $str, 
-            MCRYPT_MODE_ECB, 
+            $this->cipher, 
+            $this->key, 
+            0, 
             $iv
-        ));
+        );
+        return base64_encode($iv.$enc_str);
     } 
 
-    private function decrypt($enc_str, $key)
+    private function decrypt($enc_str)
     {
-        $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
-        $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
-        $h_key = hash('sha256', $key, TRUE);
-        return trim(mcrypt_decrypt(
-            MCRYPT_RIJNDAEL_256, 
-            $h_key, 
-            base64_decode($enc_str),
-             MCRYPT_MODE_ECB, 
-             $iv
-        ));
+        $str    = base64_decode($enc_str);
+        $iv_len = openssl_cipher_iv_length($this->cipher);
+        $iv     = substr($str, 0, $iv_len);
+        $value  = substr($str, $iv_len);
+        return openssl_decrypt(
+            $value,
+            $this->cipher, 
+            $this->key, 
+            0, 
+            $iv
+        );
     }
 }
+
 new acf_encrypt_field_option();
