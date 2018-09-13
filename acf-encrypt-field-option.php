@@ -9,6 +9,12 @@ Author URI: https://github.com/ptouch718
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 */
 
+namespace ptouch718\acf_encrypt_field_option;
+
+if( ! defined( 'ABSPATH' ) ) exit; 
+
+if( ! class_exists('acf_encrypt_field_option') ) :
+
 class acf_encrypt_field_option
 {
 
@@ -137,4 +143,6 @@ class acf_encrypt_field_option
 }
 
 new acf_encrypt_field_option();
+
+endif;
 
