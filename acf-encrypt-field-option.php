@@ -56,7 +56,7 @@ class acf_encrypt_field_option
 
     public function update_value($value, $post_id, $field)
     {
-        if ($field[$this->option_name])
+        if ( isset($field[$this->option_name]) && $field[$this->option_name] )
         {
             return $this->encrypt($value);
         }
@@ -65,7 +65,7 @@ class acf_encrypt_field_option
 
     public function load_value($value, $post_id, $field)
     {
-        if ($field[$this->option_name])
+        if ( isset($field[$this->option_name]) && $field[$this->option_name] )
         {
             return $this->decrypt($value);
         }
@@ -74,7 +74,7 @@ class acf_encrypt_field_option
 
     public function prepare_field($field)
     {
-        if ($field[$this->option_name])
+        if ( isset($field[$this->option_name]) && $field[$this->option_name] )
         {
             $field_selector = '.acf-field-'.substr($field['key'], 6);
             ?>
