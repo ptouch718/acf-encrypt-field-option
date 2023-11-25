@@ -123,12 +123,13 @@ class acf_encrypt_field_option
             0, 
             $iv
         );
-        return base64_encode($iv.$enc_str);
+        return base64_encode( $iv ) .":". base64_encode($enc_str );
     } 
 
     private function decrypt($enc_str)
     {
-        $str    = base64_decode($enc_str);
+        $fullstr = explode( ":", $enc_str );
+        $str    = base64_decode( $fullstr[0] ) . base64_decode($fullstr[1]); // reassembles $str as it was in original code
         $iv_len = openssl_cipher_iv_length($this->cipher);
         $iv     = substr($str, 0, $iv_len);
         $value  = substr($str, $iv_len);
